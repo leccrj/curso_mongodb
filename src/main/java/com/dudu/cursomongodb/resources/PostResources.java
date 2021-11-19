@@ -1,5 +1,6 @@
 package com.dudu.cursomongodb.resources;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +24,26 @@ public class PostResources {
 	
 	@RequestMapping(value="/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Post> findById(@PathVariable String id){
-		
 		Post obj = service.findById(id);	
-		return ResponseEntity.ok().body(obj);
-		
+		return ResponseEntity.ok().body(obj);	
 	}
 	
 	@RequestMapping(value="/titlesearch", method = RequestMethod.GET)
 	public ResponseEntity<List<Post>> findByTitle(@RequestParam(value = "text", defaultValue = "") String text){
-		
 		text = URL.decodeParam(text);
 		List<Post> list = service.findByTitle(text);
 		return ResponseEntity.ok().body(list);
-		
+	}
+	
+	@RequestMapping(value="/fullsearch", method = RequestMethod.GET)
+	public ResponseEntity<List<Post>> fullSearch(
+			@RequestParam(value = "text", defaultValue = "") String text,
+			@RequestParam(value = "minDate", defaultValue = "") String minDate,
+			@RequestParam(value = "maxDate", defaultValue = "") String maxDate){
+		text = URL.decodeParam(text);
+		Date minD = URL.convertDate(minDate, new Date(0L));
+		Date maxD = URL.convertDate(maxDate, new Date());
+		List<Post> list = service.fullSearch(text,minD,maxD);
+		return ResponseEntity.ok().body(list);
 	}
 }
